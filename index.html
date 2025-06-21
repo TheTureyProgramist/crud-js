@@ -1,0 +1,75 @@
+<!DOCTYPE html><html lang=en><meta charset=UTF-8><meta name=viewport content="width=device-width, initial-scale=1.0"><title>CRUD Students</title><link rel=stylesheet href=/crud-js/crud-js.0eaf2461.css><body>
+
+  <div class=container>
+
+    <h1>Список студентів</h1>
+    <div>
+      
+      <button id=get-students-btn>Отримати студентів</button>
+  
+    <button id=delete-students-btn>Видалити студентів</button>
+
+    <button id=update-students-btn>Оновити інформацію про студентів</button>
+
+    <table id=students-table>
+
+      <thead>
+
+        <tr>
+
+          <th>ID</th>
+
+          <th>Ім'я</th>
+
+          <th>Вік</th>
+
+          <th>Курс</th>
+
+          <th>Навички</th>
+
+          <th>Email</th>
+
+          <th>Статус</th>
+
+          <th>Дії</th>
+
+        </tr>
+
+      </thead>
+
+      <tbody class=students-list>
+
+        
+
+      </tbody>
+
+    </table>
+
+
+
+    <h2>Додати нового студента</h2>
+
+    <form id=add-student-form>
+
+      <label>Ім'я: <input id=name required></label>
+
+      <label>Вік: <input type=number id=age required></label>
+
+      <label>Курс: <input id=course required></label>
+
+      <label>Навички (через кому): <input id=skills required></label>
+
+      <label>Email: <input type=email id=email required></label>
+
+      <label>Записаний: <input type=checkbox id=isEnrolled></label>
+
+      <button>Додати студента</button>
+
+    </form>
+
+  </div>
+
+  <script src=/crud-js/crud-js.b1260906.js type=module></script>
+
+</div>
+
