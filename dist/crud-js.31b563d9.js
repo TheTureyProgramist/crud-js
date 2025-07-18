@@ -672,25 +672,86 @@ var _markupJs = require("./markup/markup.js");
 var _studentJs = require("./markup/student.js");
 const studentsList = document.querySelector('.students-list');
 const addStudentForm = document.getElementById('add-student-form');
-// Відображення студентів при завантаженні
-(0, _apistudentJs.getStudents)().then((data)=>{
-    studentsList.innerHTML = (0, _markupJs.makeStudentsMarkUp)(data);
-});
+function renderStudents() {
+    (0, _apistudentJs.getStudents)().then((data)=>{
+        studentsList.innerHTML = (0, _markupJs.makeStudentsMarkUp)(data);
+    });
+}
+window.deleteStudent = function(id) {
+    (0, _apistudentJs.deleteStudent)(id).then(()=>renderStudents());
+};
+window.editStudent = function(id) {
+    (0, _apistudentJs.getStudents)().then((data)=>{
+        const student = data.find((s)=>s.id === id);
+        if (!student) return;
+        const name = prompt("\u0412\u043A\u0430\u0436\u0456\u0442\u044C \u043D\u043E\u0432\u0435 \u0456\u043C'\u044F:", student.name);
+        const age = prompt("\u0412\u043A\u0430\u0436\u0456\u0442\u044C \u043D\u043E\u0432\u0438\u0439 \u0432\u0456\u043A:", student.age);
+        const course = prompt("\u0412\u043A\u0430\u0436\u0456\u0442\u044C \u043D\u043E\u0432\u0438\u0439 \u043A\u0443\u0440\u0441:", student.course);
+        const skills = prompt("\u0412\u043A\u0430\u0436\u0456\u0442\u044C \u043D\u043E\u0432\u0456 \u043D\u0430\u0432\u0438\u0447\u043A\u0438 (\u0447\u0435\u0440\u0435\u0437 \u043A\u043E\u043C\u0443):", student.skills.join(', '));
+        const email = prompt("\u0412\u043A\u0430\u0436\u0456\u0442\u044C \u043D\u043E\u0432\u0438\u0439 email:", student.email);
+        const isEnrolled = confirm("\u0417\u0430\u043F\u0438\u0441\u0430\u0442\u0438 \u0441\u0442\u0443\u0434\u0435\u043D\u0442\u0430?");
+        (0, _apistudentJs.updateStudent)(id, {
+            name,
+            age: Number(age),
+            course,
+            skills: skills.split(',').map((s)=>s.trim()),
+            email,
+            isEnrolled
+        }).then(()=>renderStudents());
+    });
+};
 addStudentForm.addEventListener('submit', (0, _studentJs.addStudent));
-// Функція для оновлення студента
-function updateStudent(id) {
-// твій код
-}
-// Функція для видалення студента
-function deleteStudent(id) {
-// твій код
-}
+document.getElementById('get-students-btn').addEventListener('click', renderStudents);
+document.getElementById('delete-students-btn').addEventListener('click', async function() {
+    const data = await (0, _apistudentJs.getStudents)();
+    await Promise.all(data.map((student)=>(0, _apistudentJs.deleteStudent)(student.id)));
+    renderStudents();
+});
+document.getElementById('update-students-btn').addEventListener('click', renderStudents);
+renderStudents();
 
 },{"./api/apistudent.js":"6Kipj","./markup/markup.js":"FZ2OQ","./markup/student.js":"hfhPj"}],"6Kipj":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "getStudents", ()=>getStudents);
-const getStudents = ()=>fetch("http://localhost:3000/students").then((response)=>response.json());
+parcelHelpers.export(exports, "updateStudent", ()=>updateStudent);
+parcelHelpers.export(exports, "deleteStudent", ()=>deleteStudent);
+async function getStudents() {
+    try {
+        const response = await fetch('http://localhost:3000/students');
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("\u041F\u043E\u043C\u0438\u043B\u043A\u0430 \u043F\u0440\u0438 \u043E\u0442\u0440\u0438\u043C\u0430\u043D\u043D\u0456 \u0441\u0442\u0443\u0434\u0435\u043D\u0442\u0456\u0432:", error);
+        return [];
+    }
+}
+async function updateStudent(id, updatedStudent) {
+    try {
+        const response = await fetch(`http://localhost:3000/students/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(updatedStudent)
+        });
+        return await response.json();
+    } catch (error) {
+        console.error("\u041F\u043E\u043C\u0438\u043B\u043A\u0430 \u043F\u0440\u0438 \u043E\u043D\u043E\u0432\u043B\u0435\u043D\u043D\u0456 \u0441\u0442\u0443\u0434\u0435\u043D\u0442\u0430:", error);
+        return null;
+    }
+}
+async function deleteStudent(id) {
+    try {
+        const response = await fetch(`http://localhost:3000/students/${id}`, {
+            method: "DELETE"
+        });
+        return await response.json();
+    } catch (error) {
+        console.error("\u041F\u043E\u043C\u0438\u043B\u043A\u0430 \u043F\u0440\u0438 \u0432\u0438\u0434\u0430\u043B\u0435\u043D\u043D\u0456 \u0441\u0442\u0443\u0434\u0435\u043D\u0442\u0430:", error);
+        return null;
+    }
+}
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"jnFvT":[function(require,module,exports,__globalThis) {
 exports.interopDefault = function(a) {
@@ -729,13 +790,17 @@ parcelHelpers.export(exports, "makeStudentsMarkUp", ()=>makeStudentsMarkUp);
 const makeStudentsMarkUp = (students)=>{
     return students.map((student)=>{
         return `<tr>
-          <th>${student.id}</th>
-          <th>${student.name}</th>
-          <th>${student.age}</th>
-          <th>${student.course}</th>
-          <th>${student.skills}</th>
-          <th>${student.email}</th>
-          <th>${student.isEnrolled}</th>
+          <td>${student.id}</td>
+          <td>${student.name}</td>
+          <td>${student.age}</td>
+          <td>${student.course}</td>
+          <td>${Array.isArray(student.skills) ? student.skills.join(', ') : student.skills}</td>
+          <td>${student.email}</td>
+          <td>${student.isEnrolled ? "\u0422rue" : "False"}</td>
+          <td>
+            <button onclick="editStudent('${student.id}')">\u{420}\u{435}\u{434}\u{430}\u{433}\u{443}\u{432}\u{430}\u{442}\u{438}</button>
+            <button onclick="deleteStudent('${student.id}')">\u{412}\u{438}\u{434}\u{430}\u{43B}\u{438}\u{442}\u{438}</button>
+          </td>
         </tr>`;
     }).join('');
 };
@@ -756,7 +821,9 @@ function addStudent(e) {
     const skills = document.getElementById('skills').value.split(',').map((s)=>s.trim());
     const email = document.getElementById('email').value.trim();
     const isEnrolled = document.getElementById('isEnrolled').checked;
+    const id = Math.random().toString(36);
     const newStudent = {
+        id,
         name,
         age,
         course,

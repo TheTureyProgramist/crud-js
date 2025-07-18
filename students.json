@@ -63,28 +63,6 @@
       ],
       "email": "mykola.bondarenko@example.com",
       "isEnrolled": true
-    },
-    {
-      "id": "cdcc",
-      "name": "Діма",
-      "age": 14,
-      "course": "мс",
-      "skills": [
-        "кц"
-      ],
-      "email": "theturkeyprogramist12@gmail.com",
-      "isEnrolled": true
-    },
-    {
-      "id": "9825",
-      "name": "Діма",
-      "age": 14,
-      "course": "мс",
-      "skills": [
-        "кц"
-      ],
-      "email": "theturkeyprogramist12@gmail.com",
-      "isEnrolled": true
     }
   ]
 }

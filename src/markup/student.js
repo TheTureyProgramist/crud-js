@@ -1,4 +1,4 @@
-import { getStudents } from '../api/apistudent.js';
+  import { getStudents } from '../api/apistudent.js';
 import { makeStudentsMarkUp } from './markup.js';
 export function addStudent(e) {
     e.preventDefault();
@@ -7,10 +7,12 @@ export function addStudent(e) {
     const name = document.getElementById('name').value.trim();
     const age = Number(document.getElementById('age').value);
     const course = document.getElementById('course').value.trim();
-    const skills = document.getElementById('skills').value.split(',').map(s => s.trim());
+const skills = document.getElementById('skills').value.split(',').map(s => s.trim());
     const email = document.getElementById('email').value.trim();
     const isEnrolled = document.getElementById('isEnrolled').checked;
+    const id = Math.random().toString(36)
     const newStudent = {
+        id,
         name,
         age,
         course,
